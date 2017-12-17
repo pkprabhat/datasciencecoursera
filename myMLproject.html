@@ -1,0 +1,14 @@
+<p>library(lattice)<br />library(rpart.plot)<br />library(caret)<br />library(rpart)<br />library(ggplot2)<br />library(caret)<br />library(gbm)<br /># library(rattle)<br />library(randomForest)<br /># Only Random Forest Examplified</p>
+<p># load data locally<br />training &lt;- read.csv("pml-training.csv", na.strings = c("NA", ""))<br />testing &lt;- read.csv("pml-testing.csv", na.strings = c("NA", ""))</p>
+<p>training &lt;- training[, colSums(is.na(training)) == 0]<br />testing &lt;- testing[, colSums(is.na(testing)) == 0]</p>
+<p>## Ignore some data which might not be useful<br />trainData &lt;- training[, -c(1:7)]<br />testData &lt;- testing[, -c(1:7)]</p>
+<p>set.seed(1249) <br />inTrain &lt;- createDataPartition(trainData$classe, p = 0.7, list = FALSE)<br />train &lt;- trainData[inTrain, ]<br />valid &lt;- trainData[-inTrain, ]</p>
+<p>fit_rf &lt;- train(classe ~ ., data = train, method = "rf")<br />print(fit_rf)</p>
+<p>predict_rf &lt;- predict(fit_rf, valid)<br />predict_final &lt;- predict(fit_rf, testData)<br />conf_rf &lt;- confusionMatrix(valid$classe, predict_rf)<br />accuracy_rf &lt;- conf_rf$overall[1]</p>
+<p><br />####Sample Run and Final Output##########<br />#Random Forest</p>
+<p>#13737 samples<br />#52 predictor<br />#5 classes: 'A', 'B', 'C', 'D', 'E'</p>
+<p>#No pre-processing<br />#Resampling: Bootstrapped (25 reps) <br />#Summary of sample sizes: 13737, 13737, 13737, 13737, 13737, 13737, ... <br />#Resampling results across tuning parameters:<br /> <br /># mtry Accuracy Kappa <br />#2 0.9887293 0.9857383<br />#27 0.9887483 0.9857637<br />#52 0.9801501 0.9748835</p>
+<p>#Accuracy was used to select the optimal model using the largest value.<br />#The final value used for the model was mtry = 27.</p>
+<p>#&gt; predict_rf &lt;- predict(fit_rf, valid)<br />#&gt; predict_final &lt;- predict(fit_rf, testData)</p>
+<p>#&gt; conf_rf &lt;- confusionMatrix(valid$classe, predict_rf)<br />#&gt; accuracy_rf &lt;- conf_rf$overall[1]<br />#&gt; accuracy_rf<br />#Accuracy <br />#0.9935429</p>
+<p>#&gt; predict_final<br />#[1] B A B A A E D B A A B C B A E E A B B B<br />#Levels: A B C D E</p>
